@@ -1,16 +1,43 @@
-# This is a sample Python script.
+import struct
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+text = open('byteNumbers').read().split('\n')
+numbs = []
+for numb in text:
+    numbs.append({'state': numb.split(' ')[0], 'value': int(numb.split(' ')[1])})
+
+print(numbs)
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+def numbers2bytes(byteList):
+    isPreambleOmitted = False
+    allBytes = []
+    for value in byteList:
+        if not isPreambleOmitted:
+            isPreambleOmitted = True
+            continue
+        num = value['value']
+        hexNum = str(struct.pack(">H", num))[2:-1].split('\\x')[1:]
+        # if len(hexNum) == 1:
+        #     hexNum.append('00')
+        for hexNumb in hexNum:
+            allBytes.append(hexNumb)
+        print(f'{value["state"]}, {num}: {hexNum}')
+    print(len(allBytes))
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
+def bin2bytes(binary):
+    low = '03'
+    high = 'ee'
+    sequence = []
+    for num in binary:
+        if num == 1:
+            sequence.extend([high, low])
+        else:
+            sequence.extend([low, high])
+    print(sequence)
+    return sequence
 
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+
+numbers2bytes(numbs)
+craftSequence('11011001')
+print(len(numbs))
